@@ -4,11 +4,13 @@
 // but you don't so you're going to write it from scratch:
 
 var stringifyJSON = function(obj) {
-  // check for individual type BASE CASES undefined,null,number,string
+  // check for individual type BASE CASES undefined,null,boolean,number,string
   if(obj === undefined) {
-    return undefined;
+    return 'undefined';
   } else if(obj === null) {
-    return null;
+    return 'null';
+  } else if(typeof obj === 'boolean') {
+    return obj ? 'true' : 'false';
   } else if(typeof obj === 'number') {
     return obj.toString();
   } else if(typeof obj === 'string') {
@@ -16,17 +18,19 @@ var stringifyJSON = function(obj) {
   // array and object types will require recursion to iterate through nested objects
   } else if(Array.isArray(obj)) {
     return '[' + obj.reduce(function(accumulator, currentIndex) {
-      return accumulator.concat(stringifyJSON(currentIndex));
+      if(typeof currentIndex === 'function'){
+        return accumulator.concat('null');
+      } else {
+        return accumulator.concat(stringifyJSON(currentIndex));
+      }
     }, []).join(',') + ']';
   } else if(typeof obj === 'object'){
     return '{' + Object.keys(obj).reduce(function(accumulator, currentKey) {
-      if(obj[currentKey] === undefined){
+      if(obj[currentKey] === undefined || typeof obj[currentKey] === 'function'){
         return accumulator;
-      } else if(obj[currentKey] !== undefined) {
-        return accumulator.concat(['"' + currentKey + '":' + stringifyJSON(obj[currentKey])]);
       } else {
-        return accumulator + '{}';
-      }
-    }, []).join(',') + '}'
-  }
+        return accumulator.concat(['"' + currentKey + '":' + stringifyJSON(obj[currentKey])]);
+      } 
+    }, []).join(',') + '}';
+  }; 
 };
