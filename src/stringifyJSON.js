@@ -14,7 +14,7 @@ var stringifyJSON = function(obj) {
   } else if(typeof obj === 'number') {
     return obj.toString();
   } else if(typeof obj === 'string') {
-    return '"' + obj + '"';
+    return '"' + obj.replace(/\n/g, '\\n').replace(/\r/g, '\\r') + '"';
   // array and object types will require recursion to iterate through nested objects
   } else if(Array.isArray(obj)) {
     return '[' + obj.reduce(function(accumulator, currentIndex) {
